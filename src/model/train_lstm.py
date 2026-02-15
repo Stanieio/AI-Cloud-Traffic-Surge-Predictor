@@ -1,59 +1,88 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import joblib
+
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.model_selection import train_test_split
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
+from tensorflow.keras.callbacks import EarlyStopping
 
-# Load dataset
+# -----------------------------
+# Load Dataset
+# -----------------------------
 data = pd.read_csv("data/raw/traffic.csv")
 
-traffic = data["traffic"].values.reshape(-1, 1)
+traffic = data['traffic'].values.reshape(-1, 1)
 
-# Scale data
+# -----------------------------
+# Scale Data
+# -----------------------------
 scaler = MinMaxScaler()
 traffic_scaled = scaler.fit_transform(traffic)
 
-# Create sequences
-X = []
-y = []
+# Save scaler for future use
+joblib.dump(scaler, "src/model/scaler.save")
 
-sequence_length = 10
+# -----------------------------
+# Create Sequences
+# -----------------------------
+def create_sequences(data, seq_length=20):
+    X = []
+    y = []
+    for i in range(len(data) - seq_length):
+        X.append(data[i:i+seq_length])
+        y.append(data[i+seq_length])
+    return np.array(X), np.array(y)
 
-for i in range(sequence_length, len(traffic_scaled)):
-    X.append(traffic_scaled[i-sequence_length:i, 0])
-    y.append(traffic_scaled[i, 0])
+X, y = create_sequences(traffic_scaled)
 
-X = np.array(X)
-y = np.array(y)
+# -----------------------------
+# Train/Test Split
+# -----------------------------
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, shuffle=False
+)
 
-X = np.reshape(X, (X.shape[0], X.shape[1], 1))
-
-# Build LSTM model
+# -----------------------------
+# Build Model
+# -----------------------------
 model = Sequential()
-model.add(LSTM(50, return_sequences=False, input_shape=(X.shape[1], 1)))
+model.add(LSTM(64, return_sequences=True, input_shape=(X.shape[1], 1)))
+model.add(LSTM(32))
 model.add(Dense(1))
 
-model.compile(optimizer='adam', loss='mean_squared_error')
+model.compile(optimizer='adam', loss='mse')
 
-# Train model
-model.fit(X, y, epochs=10, batch_size=16)
+# Early stopping to avoid overfitting
+early_stop = EarlyStopping(monitor='val_loss', patience=3)
 
-# Save model
+# -----------------------------
+# Train Model
+# -----------------------------
+history = model.fit(
+    X_train, y_train,
+    epochs=20,
+    batch_size=32,
+    validation_data=(X_test, y_test),
+    callbacks=[early_stop]
+)
+
+# -----------------------------
+# Save Model
+# -----------------------------
 model.save("src/model/lstm_model.h5")
 
-# Predict on training data
-predictions = model.predict(X)
+print("Model training complete!")
 
-# Convert back to original scale
-predictions = scaler.inverse_transform(predictions.reshape(-1,1))
-actual = scaler.inverse_transform(y.reshape(-1,1))
-
-# Plot results
-plt.plot(actual, label="Actual Traffic")
-plt.plot(predictions, label="Predicted Traffic")
+# -----------------------------
+# Plot Loss Graph
+# -----------------------------
+plt.plot(history.history['loss'], label='Train Loss')
+plt.plot(history.history['val_loss'], label='Validation Loss')
 plt.legend()
-plt.title("LSTM Traffic Prediction")
+plt.title("Model Training Loss")
+plt.xlabel("Epoch")
+plt.ylabel("Loss")
 plt.show()
-
-print("Model training completed!")
