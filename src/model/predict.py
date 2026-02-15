@@ -1,8 +1,10 @@
+from src.scaling.auto_scaler import decide_scaling
 import numpy as np
 import pandas as pd
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error
+
 
 # ==============================
 # 1️⃣ Load Trained Model
@@ -44,6 +46,7 @@ X = np.array(X)
 predictions_scaled = model.predict(X)
 predictions = scaler.inverse_transform(predictions_scaled)
 
+
 # ==============================
 # 6️⃣ Save Predictions
 # ==============================
@@ -68,3 +71,11 @@ print("Mean Squared Error (MSE):", mse)
 print("Mean Absolute Error (MAE):", mae)
 
 print("\n🚀 Prediction & Evaluation Completed Successfully!")
+predicted_value = float(predictions[-1][0])
+servers, message = decide_scaling(predicted_value)
+
+print("\n--- AUTO SCALING DECISION ---")
+print("Predicted Traffic:", predicted_value)
+print("Servers Required:", servers)
+print("Scaling Decision:", message)
+

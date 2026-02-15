@@ -1,20 +1,40 @@
-# Python cache
-__pycache__/
-*.pyc
-
-# Virtual environment
+# =========================
+# 🔐 Virtual Environment
+# =========================
 venv/
 .env
 
-# Model files
-models/
-model/
+# =========================
+# 🐍 Python Cache
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# =========================
+# 🤖 Model Weights (Heavy Files)
+# =========================
 *.h5
 *.save
 
-# Data files
-data/raw/
+# =========================
+# 📊 Generated Data Files
+# =========================
 data/predictions.csv
 
-# Generated outputs
+# =========================
+# 📈 Generated Outputs
+# =========================
 forecast.png
+
+# =========================
+# 💻 VS Code
+# =========================
+.vscode/
+
+# =========================
+# 🖥 OS Files
+# =========================
+.DS_Store
+Thumbs.db
