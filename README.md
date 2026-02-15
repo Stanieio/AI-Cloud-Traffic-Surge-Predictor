@@ -5,46 +5,33 @@ This project predicts cloud traffic spikes before they occur using a deep learni
 The system is designed to mimic how modern cloud platforms handle sudden traffic surges during:
 
 E-commerce sales
-
 Ticket booking events
-
 Streaming releases
-
 Unexpected traffic attacks
 
 🧠 Key Features
 
-📊 Realistic traffic simulation (daily + weekly patterns + surge spikes)
-
-🤖 LSTM-based time series forecasting
-
-⚠ Surge detection logic
-
-⚙ Auto-scaling decision engine
-
-🌐 API integration (FastAPI)
-
-📈 Interactive dashboard
-
-☁ Cloud deployment ready
+-> 📊 Realistic traffic simulation (daily + weekly patterns + surge spikes)
+->🤖 LSTM-based time series forecasting
+->⚠ Surge detection logic
+->⚙ Auto-scaling decision engine
+->🌐 API integration (FastAPI)
+->📈 Interactive dashboard
+->☁ Cloud deployment ready
 
 🏗 System Architecture
 
 Traffic Data → LSTM Prediction → Surge Detection → Scaling Engine → API → Dashboard
 
+
 🛠 Tech Stack
 
-Python
-
-TensorFlow (LSTM)
-
-Pandas & NumPy
-
-Matplotlib
-
-FastAPI
-
-Git & GitHub
+->Python
+->TensorFlow (LSTM)
+->Pandas & NumPy
+->Matplotlib
+->FastAPI
+->Git & GitHub
 
 🎯 Objective
 
