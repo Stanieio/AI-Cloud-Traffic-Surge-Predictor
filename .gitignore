@@ -1,6 +1,20 @@
-# Ignore model files
-*.h5
-
 # Python cache
 __pycache__/
 *.pyc
+
+# Virtual environment
+venv/
+.env
+
+# Model files
+models/
+model/
+*.h5
+*.save
+
+# Data files
+data/raw/
+data/predictions.csv
+
+# Generated outputs
+forecast.png
