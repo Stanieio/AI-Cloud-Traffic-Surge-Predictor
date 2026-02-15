@@ -1,43 +1,33 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from tensorflow.keras.models import load_model
 from sklearn.preprocessing import MinMaxScaler
 
-model = load_model("src/model/lstm_model.h5")
 
-data = pd.read_csv("data/processed/traffic_processed.csv")
+def predict_traffic():
 
+    # Load model
+    model = load_model("src/model/lstm_model.h5", compile=False)
 
-traffic = data["traffic"].values.reshape(-1, 1)
+    # Load data
+    data = pd.read_csv("data/processed/traffic_processed.csv")
 
-scaler = MinMaxScaler()
-traffic_scaled = scaler.fit_transform(traffic)
+    traffic = data["traffic"].values.reshape(-1, 1)
 
-sequence_length = 60
+    scaler = MinMaxScaler()
+    traffic_scaled = scaler.fit_transform(traffic)
 
-last_sequence = traffic_scaled[-sequence_length:]
-last_sequence = last_sequence.reshape(1, sequence_length, 1)
+    sequence_length = 60
 
-predicted_scaled = model.predict(last_sequence)
-predicted_value = scaler.inverse_transform(predicted_scaled)
+    last_sequence = traffic_scaled[-sequence_length:]
+    last_sequence = last_sequence.reshape(1, sequence_length, 1)
 
-print("Predicted Traffic:", predicted_value[0][0])
+    predicted_scaled = model.predict(last_sequence)
 
-threshold = traffic.mean() * 1.5
+    predicted_value = scaler.inverse_transform(predicted_scaled)
 
-if predicted_value[0][0] > threshold:
-    print("⚠ TRAFFIC SURGE DETECTED!")
-    print("🚀 Scale Up Servers!")
-else:
-    print("✅ Traffic Normal")
+    final_value = float(predicted_value[0][0])
 
+    print("Predicted Traffic:", final_value)
 
-plt.figure(figsize=(10,5))
-plt.plot(traffic[-100:], label="Recent Traffic")
-plt.scatter(len(traffic[-100:]), predicted_value[0][0], 
-            color="red", label="Predicted")
-
-plt.legend()
-plt.title("Traffic Forecast")
-plt.show()
+    return final_value
